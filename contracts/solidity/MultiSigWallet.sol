@@ -214,7 +214,7 @@ contract MultiSigWallet {
     function isConfirmed(bytes32 transactionHash)
         public
         constant
-        returns (bool confirmed)
+        returns (bool)
     {
         uint count = 0;
         for (uint i=0; i<owners.length; i++) {
@@ -223,6 +223,7 @@ contract MultiSigWallet {
             if (count == required)
                 return true;
         }
+        return false;
     }
 
     /// @dev Returns the nonce for a new transaction.
@@ -233,7 +234,7 @@ contract MultiSigWallet {
     function getNonce(address destination, uint value, bytes data)
         public
         constant
-        returns (uint nonce)
+        returns (uint)
     {
         return nonces[keccak256(destination, value, data)];
     }
@@ -264,9 +265,9 @@ contract MultiSigWallet {
         internal
         notNull(destination)
         validNonce(destination, value, data, nonce)
-        returns (bytes32 transactionHash)
+        returns (bytes32)
     {
-        transactionHash = keccak256(destination, value, data, nonce);
+        bytes32 transactionHash = keccak256(destination, value, data, nonce);
         if (transactions[transactionHash].destination == 0) {
             transactions[transactionHash] = Transaction({
                 destination: destination,
@@ -279,6 +280,7 @@ contract MultiSigWallet {
             transactionList.push(transactionHash);
             Submission(transactionHash);
         }
+        return transactionHash;
     }
 
     /// @dev Adds a confirmation from an owner for a transaction.
@@ -323,7 +325,7 @@ contract MultiSigWallet {
     function getPendingTransactions()
         public
         constant
-        returns (bytes32[] _transactionList)
+        returns (bytes32[])
     {
         return filterTransactions(true);
     }
@@ -333,7 +335,7 @@ contract MultiSigWallet {
     function getExecutedTransactions()
         public
         constant
-        returns (bytes32[] _transactionList)
+        returns (bytes32[])
     {
         return filterTransactions(false);
     }
