@@ -245,11 +245,13 @@ contract MultiSigWallet {
     function confirmationCount(bytes32 transactionHash)
         public
         constant
-        returns (uint count)
+        returns (uint)
     {
+        uint count = 0;
         for (uint i=0; i<owners.length; i++)
             if (confirmations[transactionHash][owners[i]])
                 count += 1;
+        return count;
     }
 
     /*
@@ -304,20 +306,22 @@ contract MultiSigWallet {
     function filterTransactions(bool isPending)
         public
         constant
-        returns (bytes32[] _transactionList)
+        returns (bytes32[])
     {
         bytes32[] memory transactionListTemp = new bytes32[](transactionList.length);
         uint count = 0;
-        for (uint i=0; i<transactionList.length; i++)
+        for (uint i=0; i<transactionList.length; i++) {
             if (   isPending && !transactions[transactionList[i]].executed
                 || !isPending && transactions[transactionList[i]].executed)
             {
                 transactionListTemp[count] = transactionList[i];
                 count += 1;
             }
-        _transactionList = new bytes32[](count);
+        }
+        bytes32[] memory _transactionList = new bytes32[](count);
         for (i=0; i<count; i++)
             _transactionList[i] = transactionListTemp[i];
+        return _transactionList;
     }
 
     /// @dev Returns transaction hashes of pending transactions.
