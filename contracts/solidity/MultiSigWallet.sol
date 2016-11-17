@@ -164,10 +164,11 @@ contract MultiSigWallet {
     /// @return transactionHash Returns hash identifying a transaction.
     function submitTransaction(address destination, uint value, bytes data, uint nonce)
         public
-        returns (bytes32 transactionHash)
+        returns (bytes32)
     {
-        transactionHash = addTransaction(destination, value, data, nonce);
+        bytes32 transactionHash = addTransaction(destination, value, data, nonce);
         confirmTransaction(transactionHash);
+        return transactionHash;
     }
 
     /// @dev Allows an owner to confirm a transaction.
